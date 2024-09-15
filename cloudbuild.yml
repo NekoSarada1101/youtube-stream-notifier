@@ -1,0 +1,16 @@
+steps:
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      [
+        "functions",
+        "deploy",
+        "youtube-stream-notifier",
+        "--region=asia-northeast1",
+        "--source=.",
+        "--trigger-topic=youtube-stream-notifier",
+        "--runtime=python311",
+        "--entry-point=stream_notifier",
+        "--service-account=discord-bot@slackbot-288310.iam.gserviceaccount.com",
+        "--update-env-vars=YOUTUBE_DATA_API_KEY=${_YOUTUBE_DATA_API_KEY}",
+      ]
