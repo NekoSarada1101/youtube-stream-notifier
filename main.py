@@ -124,14 +124,17 @@ def stream_notifier(event, context):
         video_info = get_youtube_video_info(yt_videoid)
 
         logger.info('----- create or update firestore video info -----')
+        is_streaming = ('actualStartTime' in video_info['liveStreamingDetails']
+                        and 'actualEndTime' not in video_info['liveStreamingDetails'])
+
         doc_data = {
             'link': link,
             'title': title,
-            'updated': updated
+            'updated': updated,
+            'is_streaming': is_streaming
         }
         doc_ref.collection('video_list').document(yt_videoid).set(doc_data)
 
-        is_streaming = 'actualStartTime' in video_info['liveStreamingDetails'] and 'actualEndTime' not in video_info['liveStreamingDetails']
         # firestoreにデータがないかつすでに開始されている
         if video_info_doc is None and is_streaming:
             channel_info = get_youtube_channel_info(video_info['snippet']['channelId'])
@@ -145,7 +148,12 @@ def stream_notifier(event, context):
             }
             post_message(webhook_url, headers, body)
         # firestoreにデータがあるかつ更新日時が異なるかつすでに開始されている
-        elif video_info_doc is not None and video_info_doc['updated'] != updated and is_streaming:
+        elif (
+            video_info_doc is not None
+            and video_info_doc['updated'] != updated
+            and video_info_doc['is_streaming'] is False
+            and is_streaming
+        ):
             channel_info = get_youtube_channel_info(video_info['snippet']['channelId'])
 
             headers = {'Content-Type': 'application/json'}
