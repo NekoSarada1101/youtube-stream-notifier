@@ -101,6 +101,7 @@ def stream_notifier(event, context):
 
         if feed['status'] != 200:
             logger.info('failed rss request.')
+            logger.debug(f'feed={pformat(feed)}')
             headers = {'Content-Type': 'application/json'}
             content = f'RSSの取得に失敗しました。{rss_url}'
             body = {
