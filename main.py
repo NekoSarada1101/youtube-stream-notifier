@@ -125,6 +125,9 @@ def stream_notifier(event, context):
         video_info = get_youtube_video_info(yt_videoid)
 
         logger.info('----- create or update firestore video info -----')
+        if 'liveStreamingDetails' not in video_info:
+            continue
+
         is_streaming = ('actualStartTime' in video_info['liveStreamingDetails']
                         and 'actualEndTime' not in video_info['liveStreamingDetails'])
 
