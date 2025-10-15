@@ -144,7 +144,7 @@ def stream_notifier(event, context):
             channel_info = get_youtube_channel_info(video_info['snippet']['channelId'])
 
             headers = {'Content-Type': 'application/json'}
-            content = link
+            content = title + '\n' + link
             body = {
                 'username': video_info['snippet']['channelTitle'],
                 'avatar_url': channel_info['snippet']['thumbnails']['default']['url'],
@@ -161,7 +161,7 @@ def stream_notifier(event, context):
             channel_info = get_youtube_channel_info(video_info['snippet']['channelId'])
 
             headers = {'Content-Type': 'application/json'}
-            content = link
+            content = title + '\n' + link
             body = {
                 'username': video_info['snippet']['channelTitle'],
                 'avatar_url': channel_info['snippet']['thumbnails']['default']['url'],
