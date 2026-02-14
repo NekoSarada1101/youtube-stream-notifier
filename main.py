@@ -93,6 +93,7 @@ def stream_notifier(event, context):
         'youtube').collection('channel_info').list_documents()
 
     logger.info('----- get rss -----')
+    failed_rss_urls = []
     for doc_ref in channel_info_doc_refs:
         rss_url = doc_ref.get().to_dict()['rss']
         logger.debug(f'rss={rss_url}')
@@ -102,13 +103,7 @@ def stream_notifier(event, context):
         if feed['status'] != 200:
             logger.info('failed rss request.')
             logger.debug(f'feed={pformat(feed)}')
-            headers = {'Content-Type': 'application/json'}
-            content = f'RSSの取得に失敗しました。{rss_url}'
-            body = {
-                'username': 'Youtube Stream Notifier',
-                'content': content
-            }
-            post_message(webhook_url, headers, body)
+            failed_rss_urls.append(rss_url)
             continue
 
         entry = feed['entries'][0]
@@ -168,6 +163,16 @@ def stream_notifier(event, context):
                 'content': content
             }
             post_message(webhook_url, headers, body)
+
+    # RSS取得失敗の通知をまとめて1回送信
+    if failed_rss_urls:
+        headers = {'Content-Type': 'application/json'}
+        content = 'RSSの取得に失敗しました。\n' + '\n'.join(failed_rss_urls)
+        body = {
+            'username': 'Youtube Stream Notifier',
+            'content': content
+        }
+        post_message(webhook_url, headers, body)
 
 
 if __name__ == '__main__':
