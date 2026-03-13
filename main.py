@@ -164,15 +164,16 @@ def stream_notifier(event, context):
             }
             post_message(webhook_url, headers, body)
 
-    # RSS取得失敗の通知をまとめて1回送信
+    # RSS取得失敗の通知をまとめてログ出力
     if failed_rss_urls:
-        headers = {'Content-Type': 'application/json'}
+        # headers = {'Content-Type': 'application/json'}
         content = 'RSSの取得に失敗しました。\n' + '\n'.join(failed_rss_urls)
-        body = {
-            'username': 'Youtube Stream Notifier',
-            'content': content
-        }
-        post_message(webhook_url, headers, body)
+        # body = {
+        #     'username': 'Youtube Stream Notifier',
+        #     'content': content
+        # }
+        # post_message(webhook_url, headers, body)
+        logger.debug(content)
 
 
 if __name__ == '__main__':
